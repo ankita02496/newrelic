@@ -1,0 +1,51 @@
+C:\Users\ankita\Downloads\oc>oc apply -f kube-state-metrics-release-1.5/kubernetes
+error: the path "kube-state-metrics-release-1.5/kubernetes" does not exist
+
+C:\Users\ankita\Downloads\oc>git clone https://github.com/devopscube/kube-state-metrics-configs.git
+Cloning into 'kube-state-metrics-configs'...
+remote: Enumerating objects: 10, done.
+remote: Counting objects: 100% (10/10), done.
+remote: Compressing objects: 100% (9/9), done.
+remote: Total 10 (delta 0), reused 7 (delta 0), pack-reused 0
+Receiving objects: 100% (10/10), done.
+
+C:\Users\ankita\Downloads\oc>kubectl apply -f kube-state-metrics-configs/
+Warning: kubectl apply should be used on resource created by either kubectl create --save-config or kubectl apply
+clusterrolebinding.rbac.authorization.k8s.io/kube-state-metrics configured
+Warning: kubectl apply should be used on resource created by either kubectl create --save-config or kubectl apply
+clusterrole.rbac.authorization.k8s.io/kube-state-metrics configured
+deployment.apps/kube-state-metrics created
+serviceaccount/kube-state-metrics created
+service/kube-state-metrics created
+
+C:\Users\ankita\Downloads\oc>kubectl get deployments kube-state-metrics -n kube-system
+NAME                 READY   UP-TO-DATE   AVAILABLE   AGE
+kube-state-metrics   1/1     1            1           32s
+
+C:\Users\ankita\Downloads\oc>curl -O https://download.newrelic.com/infrastructure_agent/integrations/kubernetes/newrelic-infrastructure-k8s-latest.yaml
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  6987  100  6987    0     0   6987      0  0:00:01 --:--:--  0:00:01 34418
+
+C:\Users\ankita\Downloads\oc>oc project
+Using project "newrelicpl" on server "https://api.kpmgocp.stotenrhos.com:6443".
+
+C:\Users\ankita\Downloads\oc>oc create -f newrelic-infrastructure-k8s-latest.yaml
+serviceaccount/newrelic created
+clusterrole.rbac.authorization.k8s.io/newrelic created
+clusterrolebinding.rbac.authorization.k8s.io/newrelic created
+daemonset.apps/newrelic-infra created
+configmap/nri-default-integration-cfg created
+configmap/nri-integration-cfg created
+
+C:\Users\ankita\Downloads\oc>oc get daemonsets
+NAME                                      DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR   AGE
+newrelic-bundle-newrelic-infrastructure   0         0         0       0            0           <none>          103m
+newrelic-bundle-newrelic-logging          0         0         0       0            0           <none>          103m
+
+C:\Users\ankita\Downloads\oc>oc get pods --all-namespaces | grep kube-state-metrics
+NAMESPACE                                          NAME                                                                 READY   STATUS              RESTARTS   AGE
+
+kube-system                                        kube-state-metrics-79cff5689d-54dpf                                  1/1     Running             0          10m
+localdb                                            mongodb-enterprise-operator-78b47b844b-qthbc                         1/1     Running             0          115d
+
